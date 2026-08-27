@@ -1,5 +1,4 @@
 # Data-and-Machine-Learning-Encoding
-# Categorical Encoding Techniques Guide
 
 This repository demonstrates **7 essential encoding techniques** for preparing categorical and cyclic data for machine learning models. Every method is illustrated using or inspired by features from the **Ames Housing dataset**.
 
