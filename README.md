@@ -66,7 +66,7 @@ An advanced version of target encoding that calculates the category target means
 
 ---
 
-## 🛠️ Requirements & Installation
+##  Requirements & Installation
 Ensure you have the following libraries installed before running the project notebooks:
 ```bash
 pip install numpy pandas scikit-learn category_encoders
