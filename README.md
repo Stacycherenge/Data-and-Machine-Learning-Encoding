@@ -84,7 +84,7 @@ Note: Download train.csv, test.csv, and data_description.txt directly from Kaggl
 | Linear Regression (Baseline) | $30,624 | 0.878 |
 | Random Forest Regressor | $28,533 | 0.894 |
 
-Takeaway: The Random Forest model achieved superior performance, indicating that non-linear feature interactions (such as quality weight variations across different neighborhoods) are highly relevant in this dataset.
+#### The Random Forest model achieved superior performance, indicating that non-linear feature interactions (such as quality weight variations across different neighborhoods) are highly relevant in this dataset.
 ------------------------------
 ## Key Design Decisions
 
@@ -92,6 +92,5 @@ Takeaway: The Random Forest model achieved superior performance, indicating that
 * Strict Training Isolation: Every calculation (medians, modes, encoder mappings) was fit exclusively on X_train to eliminate silent data leakage.
 * Enforced Matrix Symmetry: Leveraged Scikit-Learn pipelines over pd.get_dummies to guarantee perfectly matching validation/test shapes.
 
-------------------------------
-Would you like me to help you expand the missing Limitations or License sections at the bottom?
+
 
