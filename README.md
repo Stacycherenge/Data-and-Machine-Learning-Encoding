@@ -49,9 +49,9 @@ pip install -r requirements.txt
 # Launch environment
 jupyter notebook House_prices_corrected.ipynb
 
-Note: Download train.csv, test.csv, and data_description.txt directly from Kaggle and place them in the root directory before running.
+### Download train.csv, test.csv, and data_description.txt directly from Kaggle and place them in the root directory before running.
 ------------------------------
-## Methodology## 1. Data Type Corrections
+## Methodology 1. Data Type Corrections
 
 * MSSubClass Casting: Converted from integer to string (str) to prevent models from assuming false numerical relationships between dwelling type codes.
 
