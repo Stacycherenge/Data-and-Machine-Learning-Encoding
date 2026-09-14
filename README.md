@@ -40,44 +40,44 @@ The goal is to predict residential property SalePrice in Ames, Iowa using ~80 fe
 ------------------------------
 ## Setup & Installation
 
-# Clone and enter repository
+### Clone and enter repository
 git clone <your-repo-url> && cd <your-repo-folder>
-# Environment setup
+### Environment setup
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-# Launch environment
+### Launch environment
 jupyter notebook House_prices_corrected.ipynb
 
 ### Download train.csv, test.csv, and data_description.txt directly from Kaggle and place them in the root directory before running.
 ------------------------------
-## Methodology 1. Data Type Corrections
+### Methodology 1. Data Type Corrections
 
 * MSSubClass Casting: Converted from integer to string (str) to prevent models from assuming false numerical relationships between dwelling type codes.
 
-## 2. Validation Strategy
+### 2. Validation Strategy
 
 * Train/Val Split: 80/20 data split using random_state=42. Official test data remains completely untouched during engineering.
 
-## 3. Missing Value Imputation
+### 3. Missing Value Imputation
 
 * Structural Absence (NA = Feature Missing): Replaced with "None" (categorical) or 0 (numerical fields like GarageYrBlt) to signify the house lacks that asset.
 * Genuine Missingness: Imputed using training-only mode (categorical) or median (numerical) to prevent validation leakage.
 
-## 4. Categorical Encoding Split
+### 4. Categorical Encoding Split
 
 * Ordinal Encoding: Applied to ranked quality/condition columns using explicit integer mappings.
 * One-Hot Encoding: Applied to unordered fields (e.g., RoofStyle). Handled via Scikit-Learn’s OneHotEncoder(handle_unknown='ignore') fit strictly on training data.
 * Cyclic Encoding: Transformed MoSold (1–12) into Sine/Cosine pairs to properly connect December (12) and January (1).
 
-## 5. Modeling
+### 5. Modeling
 
 * Evaluated continuous predictions using RMSE and R² across two architectures:
 * Linear Regression: Baseline model.
    * Random Forest Regressor: Complex ensemble (300 trees) to capture non-linear feature combinations.
 
 ------------------------------
-## Results
+### Results
 
 | Model | Validation RMSE | Validation R² |
 |---|---|---|
@@ -86,7 +86,7 @@ jupyter notebook House_prices_corrected.ipynb
 
 #### The Random Forest model achieved superior performance, indicating that non-linear feature interactions (such as quality weight variations across different neighborhoods) are highly relevant in this dataset.
 ------------------------------
-## Key Design Decisions
+### Key Design Decisions
 
 * Context-Driven Imputation: Separated structural "no feature" gaps from completely missing observations to preserve clean signal distributions.
 * Strict Training Isolation: Every calculation (medians, modes, encoder mappings) was fit exclusively on X_train to eliminate silent data leakage.
