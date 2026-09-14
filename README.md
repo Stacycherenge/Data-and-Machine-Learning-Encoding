@@ -1,6 +1,4 @@
 # Data-and-Machine-Learning-Encoding
-Here is a streamlined, highly scannable version of your README. It trims down the heavy text blocks into punchy fragments while keeping all the critical technical details intact.
-------------------------------
 ## House Prices — Encoding Techniques & Regression
 A walkthrough of preparing the Kaggle House Prices: Advanced Regression Techniques dataset for modeling. This pipeline focuses on matching the correct encoding technique to each specific categorical variable type rather than using a single method for everything.
 ## Contents
