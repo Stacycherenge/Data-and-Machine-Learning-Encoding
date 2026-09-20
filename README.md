@@ -1,73 +1,96 @@
 # Data-and-Machine-Learning-Encoding
+## House Prices — Encoding Techniques & Regression
+A walkthrough of preparing the Kaggle House Prices: Advanced Regression Techniques dataset for modeling. This pipeline focuses on matching the correct encoding technique to each specific categorical variable type rather than using a single method for everything.
+## Contents
 
-This repository demonstrates **7 essential encoding techniques** for preparing categorical and cyclic data for machine learning models. Every method is illustrated using or inspired by features from the **Ames Housing dataset**.
+* Project Overview
+* Dataset
+* Repository Structure
+* Setup & Installation
+* Methodology
+* Results
+* Key Design Decisions
 
----
+------------------------------
+## Project Overview
+The goal is to predict residential property SalePrice in Ames, Iowa using ~80 features. This dataset serves as an ideal testbed for tailored categorical encoding:
 
-## Table of Contents
-1. [Label Encoding](#method-1-label-encoding)
-2. [One-Hot Encoding](#method-2-one-hot-encoding)
-3. [Feature Hashing](#method-3-feature-hashing)
-4. [Dataset Statistics Encoding](#method-4-encoding-categories-with-dataset-statistics)
-5. [Cyclic Features Encoding](#cyclic-features-encoding-cyclic-features)
-6. [Target Encoding](#method-5-target-encoding)
-7. [K-Fold Target Encoding](#method-6-k-fold-target-encoding)
+* Ranked features (e.g., ExterQual: Poor → Excellent) require preserving order.
+* Unordered features (e.g., Neighborhood) require nominal treatment.
+* Secret categories (e.g., MSSubClass) look numeric but are actually codes.
+* Cyclic features (e.g., MoSold) repeat periodically.
 
----
+------------------------------
+## Dataset
 
-## Method 1: Label Encoding
-Assigns a unique integer to each category based on alphabetical order or custom ranking.
-* **Best Used For:** Ordinal features (categories with an inherent order).
-* **Ames Housing Example:** `KitchenQual` (Ex, Gd, TA, Fa, Po).
-* **Pros:** Keeps dataset memory footprint low; preserves natural order.
-* **Cons:** Introduces a false mathematical hierarchy for non-ordinal features (e.g., Red = 1, Blue = 2).
+* Source: [Kaggle — House Prices Competition](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques)
+* Training Data: train.csv (1,460 rows, 81 columns)
+* Test Data: test.csv (1,459 rows, 80 columns)
+* Target Variable: SalePrice (Continuous, USD)
 
-## Method 2: One-Hot Encoding
-Creates a new binary column ($0$ or $1$) for each unique category in a feature.
-* **Best Used For:** Nominal features with low-to-medium cardinality (few unique values).
-* **Ames Housing Example:** `Foundation` (PConc, CBlock, BrkTil, Wood).
-* **Pros:** Works perfectly with linear models; introduces no false numerical ranking.
-* **Cons:** Causes the "curse of dimensionality" on high-cardinality features.
+------------------------------
+## Repository Structure
 
-## Method 3: Feature Hashing
-Uses a hashing function to map high-cardinality categorical values into a fixed-size numerical vector.
-* **Best Used For:** High-cardinality features or streaming data where vocabulary size is unknown.
-* **Ames Housing Example:** `Neighborhood` or `Exterior1st`.
-* **Pros:** Extreme memory efficiency; handles new or unseen categories automatically.
-* **Cons:** Irreversible transformation; potential "hash collisions" where different categories get the same ID.
+.
+├── House_prices_corrected.ipynb   # Full cleaning, encoding, and modeling notebook
+├── data_description.txt           # Kaggle category code reference definitions
+├── requirements.txt               # Pinpinned dependencies (pandas 3.0, scikit-learn 1.8)
+└── README.md
 
-## Method 4: Encoding Categories with Dataset Statistics
-Replaces categories with frequency counts or percentages calculated directly from the dataset.
-* **Best Used For:** High-cardinality features where frequency correlates with the target variable.
-* **Ames Housing Example:** `SaleType` or `MSZoning`.
-* **Pros:** Easy to compute; preserves representation weight without adding new columns.
-* **Cons:** Destroys category identity if two entirely different categories share the exact same frequency count.
+------------------------------
+## Setup & Installation
 
-## Cyclic Features: Encoding Cyclic Features
-Transforms cyclical continuous features into coordinates using **Sine and Cosine transformations**.
-* **Best Used For:** Time-based, seasonal, or repeating numerical patterns.
-* **Ames Housing Example:** `MoSold` (Month Sold, 1-12).
-* **Pros:** Ensures the model understands that January ($1$) and December ($12$) are chronologically adjacent.
-* **Cons:** Doubles the feature column count; can confuse non-tree-based algorithms if not scaled.
+### Clone and enter repository
+git clone <your-repo-url> && cd <your-repo-folder>
+### Environment setup
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+### Launch environment
+jupyter notebook House_prices_corrected.ipynb
 
-## Method 5: Target Encoding
-Replaces each category value with the global expected mean of the target variable for that specific category.
-* **Best Used For:** High-cardinality categorical features used in tree-based algorithms.
-* **Ames Housing Example:** Encoding `Neighborhood` using the mean `SalePrice`.
-* **Pros:** Builds a direct, strong linear relationship between the category and the target.
-* **Cons:** High risk of **target leakage** and severe overfitting if not heavily smoothed or regularised.
+### Download train.csv, test.csv, and data_description.txt directly from Kaggle and place them in the root directory before running.
+------------------------------
+### Methodology 1. Data Type Corrections
 
-## Method 6: K-Fold Target Encoding
-An advanced version of target encoding that calculates the category target means out-of-fold using a cross-validation split.
-* **Best Used For:** Preventing overfitting in production-grade gradient boosting models (XGBoost, LightGBM).
-* **Ames Housing Example:** Encoding `Neighborhood` relative to `SalePrice` inside a 5-Fold split.
-* **Pros:** Mitigates target leakage; vastly improves model generalization on unseen data.
-* **Cons:** Computationally complex to track, build, and deploy to pipeline pipelines.
+* MSSubClass Casting: Converted from integer to string (str) to prevent models from assuming false numerical relationships between dwelling type codes.
 
----
+### 2. Validation Strategy
 
-##  Requirements & Installation
-Ensure you have the following libraries installed before running the project notebooks:
-```bash
-pip install numpy pandas scikit-learn category_encoders
-```
+* Train/Val Split: 80/20 data split using random_state=42. Official test data remains completely untouched during engineering.
+
+### 3. Missing Value Imputation
+
+* Structural Absence (NA = Feature Missing): Replaced with "None" (categorical) or 0 (numerical fields like GarageYrBlt) to signify the house lacks that asset.
+* Genuine Missingness: Imputed using training-only mode (categorical) or median (numerical) to prevent validation leakage.
+
+### 4. Categorical Encoding Split
+
+* Ordinal Encoding: Applied to ranked quality/condition columns using explicit integer mappings.
+* One-Hot Encoding: Applied to unordered fields (e.g., RoofStyle). Handled via Scikit-Learn’s OneHotEncoder(handle_unknown='ignore') fit strictly on training data.
+* Cyclic Encoding: Transformed MoSold (1–12) into Sine/Cosine pairs to properly connect December (12) and January (1).
+
+### 5. Modeling
+
+* Evaluated continuous predictions using RMSE and R² across two architectures:
+* Linear Regression: Baseline model.
+   * Random Forest Regressor: Complex ensemble (300 trees) to capture non-linear feature combinations.
+
+------------------------------
+### Results
+
+| Model | Validation RMSE | Validation R² |
+|---|---|---|
+| Linear Regression (Baseline) | $30,624 | 0.878 |
+| Random Forest Regressor | $28,533 | 0.894 |
+
+#### The Random Forest model achieved superior performance, indicating that non-linear feature interactions (such as quality weight variations across different neighborhoods) are highly relevant in this dataset.
+------------------------------
+### Key Design Decisions
+
+* Context-Driven Imputation: Separated structural "no feature" gaps from completely missing observations to preserve clean signal distributions.
+* Strict Training Isolation: Every calculation (medians, modes, encoder mappings) was fit exclusively on X_train to eliminate silent data leakage.
+* Enforced Matrix Symmetry: Leveraged Scikit-Learn pipelines over pd.get_dummies to guarantee perfectly matching validation/test shapes.
+
+
+
